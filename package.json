@@ -10,8 +10,11 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "ejs": "2.4.1",
-    "express": "4.13.3"
+        "engine.io": "*",
+        "socket.io": "*",
+        "debug": "*",
+        "underscore":"*",
+      "express": "4.13.3"
   },
   "repository": {
     "type": "git",

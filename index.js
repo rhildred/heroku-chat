@@ -1,20 +1,28 @@
-var express = require('express');
-var app = express();
+var express = require("express"),
+    app = express(),
+    server = require('http').createServer(app),
+    io = require('socket.io')(server),
+    _ = require('underscore'),
+    debug=require("debug")("index.js");
 
-app.set('port', (process.env.PORT || 5000));
+//var ipaddr = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+var port = process.env.PORT || parseInt(process.argv.pop()) || 8080;
 
-app.use(express.static(__dirname + '/public'));
+debug(port);
 
-// views is directory for all template files
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-
-app.get('/', function(request, response) {
-  response.render('pages/index');
+server.listen(port, function(){
+    console.log("Server listening at port %d", port);
 });
 
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
+io.on('connection', function (socket) {
+  // when the client emits 'receive message', this listens and executes
+  socket.on('receive message', function (data) {
+      var oOut = {
+          from: _.escape(data.from),
+          message: _.escape(data.message)
+      };
+      socket.broadcast.emit("receive message", oOut);
+  });
 });
 
-
+app.use(express.static(__dirname + '/www/'));
